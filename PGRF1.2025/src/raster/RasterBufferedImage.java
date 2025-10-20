@@ -18,7 +18,7 @@ public class RasterBufferedImage implements Raster {
             return;
         }
 
-        image.setRGB(x,y,c);
+        image.setRGB(x, y, c);
     }
 
     @Override

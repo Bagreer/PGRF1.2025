@@ -1,5 +1,7 @@
 package controller;
 
+import fill.Filler;
+import fill.SeedFill;
 import model.Line;
 import model.Point;
 import model.Polygon;
@@ -8,6 +10,7 @@ import view.Panel;
 
 import java.awt.*;
 import java.awt.event.*;
+import java.awt.image.Raster;
 import java.util.ArrayList;
 
 public class Controller2D {
@@ -26,6 +29,9 @@ public class Controller2D {
     private LineRasterizer LineRasterizer;
     private PolygonRasterizer PolygonRasterizer;
 
+    private Filler seedFiller;
+    private Point seedFillerStartPoint;
+
     // ... (konstruktor a drawScene zůstávají stejné) ...
     public Controller2D(Panel panel) {
         this.panel = panel;
@@ -41,6 +47,11 @@ public class Controller2D {
         }
         PolygonRasterizer.rasterize(polygon);
         panel.repaint();
+
+        if (seedFillerStartPoint != null) {
+            seedFiller = new SeedFill(seedFillerStartPoint.getX(), seedFillerStartPoint.getY(), 0x000000, 0xffffff, panel.getRaster());
+            seedFiller.fill();
+        }
     }
 
 
@@ -55,6 +66,11 @@ public class Controller2D {
                 x1 = e.getX();
                 y1 = e.getY();
                 System.out.println(x1 + " " + y1);
+
+                if (e.getButton() == MouseEvent.BUTTON3) {
+                    seedFillerStartPoint = new Point(e.getX(), e.getY());
+                }
+
             }
 
             public void mouseReleased(MouseEvent e) {

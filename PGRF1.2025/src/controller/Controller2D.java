@@ -1,6 +1,7 @@
 package controller;
 
 import fill.Filler;
+import fill.ScanLineFiller;
 import fill.SeedFill;
 import model.Line;
 import model.Point;
@@ -32,11 +33,14 @@ public class Controller2D {
     private Filler seedFiller;
     private Point seedFillerStartPoint;
 
+    private Filler scanLineFiller;
+
     // ... (konstruktor a drawScene zůstávají stejné) ...
     public Controller2D(Panel panel) {
         this.panel = panel;
         LineRasterizer = new LineRasterizerTrivial(panel.getRaster(), color);
         PolygonRasterizer = new PolygonRasterizer(LineRasterizer);
+        scanLineFiller = new ScanLineFiller(polygon, panel.getRaster(), LineRasterizer);
         initListeners();
     }
 
@@ -49,7 +53,7 @@ public class Controller2D {
         panel.repaint();
 
         if (seedFillerStartPoint != null) {
-            seedFiller = new SeedFill(seedFillerStartPoint.getX(), seedFillerStartPoint.getY(), 0x000000, 0xffffff, panel.getRaster());
+            seedFiller = new SeedFill(seedFillerStartPoint.getX(), seedFillerStartPoint.getY(), panel.getRaster().getPixel(seedFillerStartPoint.getX(), seedFillerStartPoint.getY()), 0xff0000, panel.getRaster());
             seedFiller.fill();
         }
     }
@@ -137,6 +141,17 @@ public class Controller2D {
                     polygon = new Polygon();
                 } else if (keyCode == KeyEvent.VK_V) {
                     LineRasterizer = new LineRasterizerTrivialColor(panel.getRaster(), color);
+                } else if (keyCode == KeyEvent.VK_F) {
+                    if (polygon.getSize() >= 3) {
+                        Filler currentFiller = new ScanLineFiller(
+                                polygon,
+                                panel.getRaster(),
+                                LineRasterizer // Použijeme existující rasterizér
+                        );
+                        currentFiller.fill();
+                    }
+                    System.out.println("Press F to pay respect");
+                    panel.repaint();
                 }
             }
 

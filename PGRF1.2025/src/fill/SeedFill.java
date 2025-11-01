@@ -2,17 +2,16 @@ package fill;
 
 import raster.RasterBufferedImage;
 
-import java.awt.image.Raster;
 import java.util.OptionalInt;
 
 public class SeedFill implements Filler {
 
     private int startX,startY;
-    private int Backgroundcolor;
+    private OptionalInt Backgroundcolor;
     private int fillColor;
     private raster.Raster raster;
 
-    public SeedFill(int startX, int startY, int color, int fillColor, RasterBufferedImage raster) {
+    public SeedFill(int startX, int startY, OptionalInt color, int fillColor, RasterBufferedImage raster) {
         this.startX = startX;
         this.startY = startY;
         this.Backgroundcolor = color;
@@ -33,9 +32,7 @@ public class SeedFill implements Filler {
 
         if (pixelColor.isEmpty()) {return;}
 
-        System.out.println("filled");
-
-        if (pixelColor.getAsInt() != Backgroundcolor) {
+        if (pixelColor.getAsInt() != Backgroundcolor.getAsInt()) {
             return;
         }
 

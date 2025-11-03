@@ -1,25 +1,27 @@
 package fill;
 
-import raster.RasterBufferedImage;
-
+import raster.Raster;
 import java.util.OptionalInt;
 
 public class SeedFill implements Filler {
 
-    private int startX,startY;
-    private OptionalInt Backgroundcolor;
+    private Raster raster;
+    private int startX, startY;
+    private int backgroundColor;
     private int fillColor;
-    private raster.Raster raster;
 
-    public SeedFill(int startX, int startY, OptionalInt color, int fillColor, RasterBufferedImage raster) {
+
+    public SeedFill(Raster raster, int startX, int startY, int fillColor) {
+        this.raster = raster;
         this.startX = startX;
         this.startY = startY;
-        this.Backgroundcolor = color;
         this.fillColor = fillColor;
-        this.raster = (raster.Raster) raster;
 
-        OptionalInt pixelColor = raster.getPixel(startX,startY);
+        OptionalInt pixelColor = raster.getPixel(startX, startY);
+        if (pixelColor.isPresent())
+            this.backgroundColor = pixelColor.getAsInt();
     }
+
 
     @Override
     public void fill() {
@@ -28,13 +30,13 @@ public class SeedFill implements Filler {
 
     private void seedFill(int x, int y) {
 
-        OptionalInt pixelColor = raster.getPixel(x,y);
+        OptionalInt pixelColor = raster.getPixel(x, y);
+        if (pixelColor.isEmpty()) return;
 
-        if (pixelColor.isEmpty()) {return;}
 
-        if (pixelColor.getAsInt() != Backgroundcolor.getAsInt()) {
+        if (pixelColor.getAsInt() != backgroundColor)
             return;
-        }
+
 
         raster.setPixel(x,y,fillColor);
 

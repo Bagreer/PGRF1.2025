@@ -50,12 +50,13 @@ public class Controller2D {
             LineRasterizer.rasterize(line);
         }
         PolygonRasterizer.rasterize(polygon);
-        panel.repaint();
 
-        if (seedFillerStartPoint != null) {
-            seedFiller = new SeedFill(seedFillerStartPoint.getX(), seedFillerStartPoint.getY(), panel.getRaster().getPixel(seedFillerStartPoint.getX(), seedFillerStartPoint.getY()), 0xff0000, panel.getRaster());
+        if(seedFillerStartPoint != null)
+        {
+            seedFiller = new SeedFill(panel.getRaster(), seedFillerStartPoint.getX(), seedFillerStartPoint.getY(), 0x00ff00);
             seedFiller.fill();
         }
+
     }
 
 

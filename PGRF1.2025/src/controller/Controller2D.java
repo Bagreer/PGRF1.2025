@@ -46,18 +46,23 @@ public class Controller2D {
 
     private void drawScene() {
         panel.getRaster().clear();
-        for (Line line : lines) {
+
+        // Vykreslim scénu
+        for (Line line : lines)
             LineRasterizer.rasterize(line);
-        }
+
         PolygonRasterizer.rasterize(polygon);
 
+        // seed fill
         if(seedFillerStartPoint != null)
         {
             seedFiller = new SeedFill(panel.getRaster(), seedFillerStartPoint.getX(), seedFillerStartPoint.getY(), 0x00ff00);
             seedFiller.fill();
         }
 
+        panel.repaint();
     }
+
 
 
     /**

@@ -74,7 +74,7 @@ public class Edge {
     }
 
     public boolean isIntersection(int y) {
-        return y1 <= y && y <= y2;
+        return y1 <= y && y < y2;
     }
 
     /**
@@ -90,7 +90,7 @@ public class Edge {
         float k = 0;
         float q = 0;
 
-        k = (y2 - y1) / (float) (x2 - x1);  //vyřešit když x1 a x2 jsou stejné
+        k = (y2 - y1) / (float) (x2 - x1);
         q = y1 - k * x1;
 
         return Math.round((y - q) / k);

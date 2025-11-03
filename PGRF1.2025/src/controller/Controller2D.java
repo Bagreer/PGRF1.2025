@@ -35,7 +35,12 @@ public class Controller2D {
 
     private Filler scanLineFiller;
 
-    // ... (konstruktor a drawScene zůstávají stejné) ...
+    /**
+     * třída na ovládání a zobrazování grafických blbostí.
+     * inicializuje listenery, definuje lineRasterizery a polygonRasterizery
+     *
+     * @param panel panel, na kterém se vykresluje
+     */
     public Controller2D(Panel panel) {
         this.panel = panel;
         LineRasterizer = new LineRasterizerTrivial(panel.getRaster(), color);
@@ -44,6 +49,9 @@ public class Controller2D {
         initListeners();
     }
 
+    /**
+     * Metoda pro vykreslování scény, clearne scénu > vykreslí linky > rasterizuje polygon >
+     */
     private void drawScene() {
         panel.getRaster().clear();
 
@@ -54,15 +62,19 @@ public class Controller2D {
         PolygonRasterizer.rasterize(polygon);
 
         // seed fill
-        if(seedFillerStartPoint != null)
-        {
+        if (seedFillerStartPoint != null) {
             seedFiller = new SeedFill(panel.getRaster(), seedFillerStartPoint.getX(), seedFillerStartPoint.getY(), 0x00ff00);
             seedFiller.fill();
         }
 
+        // priprava na scanLineFill (presunuti z keyListeneru do drawScene)
+//        if () {
+//            scanLineFiller = new ScanLineFiller(polygon, panel.getRaster(), LineRasterizer);
+//            scanLineFiller.fill();
+//        }
+
         panel.repaint();
     }
-
 
 
     /**
@@ -156,7 +168,6 @@ public class Controller2D {
                         );
                         currentFiller.fill();
                     }
-                    System.out.println("Press F to pay respect");
                     panel.repaint();
                 }
             }
@@ -171,6 +182,15 @@ public class Controller2D {
         });
     }
 
+    /**
+     * Zarovná souřadnice bodů na úsečce tak aby byly v úhlech (0,45,90,...)
+     *
+     * @param x1 souřadnice x prvního body
+     * @param y1 souřadnice y prvního body
+     * @param x2 souřadnice x druhého body
+     * @param y2 souřadnice y druhého body
+     * @return srovnané souřadnice úsečce
+     */
     private Point alignCoordinates(int x1, int y1, int x2, int y2) {
         int dx = x2 - x1;
         int dy = y2 - y1;

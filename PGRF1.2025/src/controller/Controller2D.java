@@ -1,5 +1,6 @@
 package controller;
 
+import clip.Clipper;
 import fill.Filler;
 import fill.ScanLineFiller;
 import fill.SeedFill;
@@ -9,10 +10,9 @@ import model.Polygon;
 import rasterize.*;
 import view.Panel;
 
-import java.awt.*;
 import java.awt.event.*;
-import java.awt.image.Raster;
 import java.util.ArrayList;
+import java.util.List;
 
 public class Controller2D {
     private final Panel panel;
@@ -28,12 +28,17 @@ public class Controller2D {
     private ArrayList<Line> lines = new ArrayList<>();
 
     private LineRasterizer LineRasterizer;
-    private PolygonRasterizer PolygonRasterizer;
+    private PolygonRasterizer polygonRasterizer;
 
     private Filler seedFiller;
     private Point seedFillerStartPoint;
 
     private Filler scanLineFiller;
+
+    private Clipper clipper;
+    private Polygon polygonClipper = new Polygon();
+
+
 
     /**
      * třída na ovládání a zobrazování grafických blbostí.
@@ -44,8 +49,9 @@ public class Controller2D {
     public Controller2D(Panel panel) {
         this.panel = panel;
         LineRasterizer = new LineRasterizerTrivial(panel.getRaster(), color);
-        PolygonRasterizer = new PolygonRasterizer(LineRasterizer);
+        polygonRasterizer = new PolygonRasterizer(LineRasterizer);
         scanLineFiller = new ScanLineFiller(polygon, panel.getRaster(), LineRasterizer);
+        clipper = new Clipper();
         initListeners();
     }
 
@@ -55,24 +61,48 @@ public class Controller2D {
     private void drawScene() {
         panel.getRaster().clear();
 
-        // Vykreslim scénu
+        // Vykreslení úseček
         for (Line line : lines)
             LineRasterizer.rasterize(line);
 
-        PolygonRasterizer.rasterize(polygon);
-
-        // seed fill
+        // seedFill vykreslení
         if (seedFillerStartPoint != null) {
             seedFiller = new SeedFill(panel.getRaster(), seedFillerStartPoint.getX(), seedFillerStartPoint.getY(), 0x00ff00);
             seedFiller.fill();
         }
 
-        // priprava na scanLineFill (presunuti z keyListeneru do drawScene)
-//        if () {
-//            scanLineFiller = new ScanLineFiller(polygon, panel.getRaster(), LineRasterizer);
-//            scanLineFiller.fill();
-//        }
 
+        // TODO vytvořit polygon pomoci pointu (nejlepe pracovat s Listem, ale pokud to rozbije projekt tak pouzit new ArrayList<clipped points>)
+
+        //vykreslení obou polygonů
+        polygonRasterizer.rasterize(polygon);
+        LineRasterizer.setColor(0x5500ff);  // aby byl kazdy jinou barvou
+        polygonRasterizer.rasterize(polygonClipper);
+        LineRasterizer.setColor(0xffffff);
+
+        // --- VOLÁNÍ OŘEZÁVÁNÍ A VYKRESLENÍ VÝSLEDKU ---
+
+        // TODO provedu ořezání - Používám Clipper.clip()
+        List<Point> clippedPoints = clipper.clip(polygon.getPoints(), polygonClipper.getPoints());
+
+        // TODO vytvořit polygon pomoci pointu
+
+        Polygon polygonToDraw = new Polygon();
+        for (Point p : clippedPoints) {
+            // TODO vznikne novy seznam pointu > vyplním výsledek ořezání pomocí scanLine
+            polygonToDraw.addPoint(p);
+        }
+
+        if (polygonToDraw.getSize() >= 3) {
+            scanLineFiller = new ScanLineFiller(
+                    polygonToDraw,
+                    panel.getRaster(),
+                    LineRasterizer
+            );
+        }
+        // TODO vyplním výsledek ořezání pomocí scanLine
+        scanLineFiller.fill();
+        polygonRasterizer.rasterize(polygonToDraw);
         panel.repaint();
     }
 
@@ -169,7 +199,11 @@ public class Controller2D {
                         currentFiller.fill();
                     }
                     panel.repaint();
+                } else if (keyCode == KeyEvent.VK_Q) {
+                    polygonClipper.addPoint(new Point(currentX, currentY));
+                    drawScene();
                 }
+
             }
 
             @Override

@@ -5,7 +5,7 @@ import java.util.List;
 
 public class Polygon {
 
-    private ArrayList<Point> points;
+    protected ArrayList<Point> points;
 
     public Polygon() {
         points = new ArrayList<>();

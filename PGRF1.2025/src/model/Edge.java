@@ -69,7 +69,6 @@ public class Edge {
             temp = x1;
             x1 = x2;
             x2 = temp;
-
         }
     }
 
@@ -87,12 +86,12 @@ public class Edge {
 
         if(x1 == x2) return x1;
 
-        float k = 0;
-        float q = 0;
+        double k = 0;
+        double q = 0;
 
-        k = (y2 - y1) / (float) (x2 - x1);
+        k = (double) (y2 - y1) / (x2 - x1);
         q = y1 - k * x1;
 
-        return Math.round((y - q) / k);
+        return (int) Math.round((y - q) / k);
     }
 }

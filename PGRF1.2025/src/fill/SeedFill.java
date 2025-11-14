@@ -34,7 +34,7 @@ public class SeedFill implements Filler {
 
         if (pixelColor.isEmpty()) return;
         if (pixelColor.getAsInt() != backgroundColor) return;
-
+        if (raster.getPixel(startX, startY).isEmpty()) return;
 
         raster.setPixel(x,y,fillColor);
 

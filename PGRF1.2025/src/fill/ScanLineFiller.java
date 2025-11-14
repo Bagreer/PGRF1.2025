@@ -25,6 +25,12 @@ public class ScanLineFiller implements Filler {
         this.polygonRasterizer = new PolygonRasterizer(lineRasterizer);
     }
 
+    public ScanLineFiller(LineRasterizer lineRasterizer) {
+        polygon = new Polygon();
+        this.lineRasterizer = lineRasterizer;
+        this.polygonRasterizer = new PolygonRasterizer(lineRasterizer);
+    }
+
     @Override
     public void fill() {
 

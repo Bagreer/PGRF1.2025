@@ -25,11 +25,11 @@ public class RasterBufferedImage implements Raster {
     @Override
     public OptionalInt getPixel(int x, int y) {
 
+        if (x>getWidth() || y>getHeight()) {return OptionalInt.empty();}
+
         return OptionalInt.of(image.getRGB(x, y));
 
         //pokud mimo raster vrati empty
-//        return OptionalInt.empty();
-
     }
 
     @Override

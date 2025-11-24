@@ -101,8 +101,8 @@ public class Controller2D {
                     panel.getRaster(),
                     LineRasterizer
             );
-//            scanLineFiller.fill();
-//            polygonRasterizer.rasterize(polygonToDraw);
+            scanLineFiller.fill();
+            polygonRasterizer.rasterize(polygonToDraw);
         }
         // TODO vyplním výsledek ořezání pomocí scanLine
 

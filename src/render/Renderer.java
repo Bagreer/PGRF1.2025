@@ -32,14 +32,16 @@ public class Renderer {
 
 
             // FIXME: vytvořit metodu pro tohle
-            vecA = vecA.mul(new Vec3D(1,-1,1)); //mul vraci nový vektor, potřeba ho uložit !!!
-            vecA = vecA.add(new Vec3D(1,1,0));
-            vecA = vecA.mul(new Vec3D((double) (width-1) / 2, (double)(height-1)/2, 1));
+//            vecA = vecA.mul(new Vec3D(1,-1,1)); //mul vraci nový vektor, potřeba ho uložit !!!
+//            vecA = vecA.add(new Vec3D(1,1,0));
+//            vecA = vecA.mul(new Vec3D((double) (width-1) / 2, (double)(height-1)/2, 1));
+//
+//            vecB = vecB.mul(new Vec3D(1,-1,1));
+//            vecB = vecB.add(new Vec3D(1,1,0));
+//            vecB = vecB.mul(new Vec3D((double) (width-1) / 2, (double)(height-1)/2, 1));
 
-            vecB = vecB.mul(new Vec3D(1,-1,1));
-            vecB = vecB.add(new Vec3D(1,1,0));
-            vecB = vecB.mul(new Vec3D((double) (width-1) / 2, (double)(height-1)/2, 1));
-
+            vecA = transformVec(vecA); // transformVec vrací nový vetor
+            vecB = transformVec(vecB);
 
             lineRasterizer.rasterize(
                     (int) Math.round(vecA.getX()), (int) Math.round(vecA.getY()),
@@ -49,8 +51,26 @@ public class Renderer {
 
     }
 
+    /**
+     * udělá 3 operace nad maticí aby se pokaždé nemusel psát kód znovu
+     * @param vecA vector na kterem se provadi upravy
+     * @return nový vektor
+     */
+    private Vec3D transformVec(Vec3D vecA) {
+        vecA = vecA.mul(new Vec3D(1,-1,1)); //mul vraci nový vektor, potřeba ho uložit !!!
+        vecA = vecA.add(new Vec3D(1,1,0));
+        vecA = vecA.mul(new Vec3D((double) (width-1) / 2, (double)(height-1)/2, 1));
+
+        return vecA;
+    }
+
     public void renderSolids(ArrayList<Solid> solids) {
         //TODO implementovat
+
+        for(Solid solid : solids) {
+            renderSolid(solid);
+        }
+
     }
 
 }

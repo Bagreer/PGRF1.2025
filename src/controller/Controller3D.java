@@ -162,6 +162,14 @@ public class Controller3D {
                     transformActiveSolid(new Mat4Transl(-0.1, 0, 0));
                     drawScene();
                 }
+                if (e.getKeyCode() == KeyEvent.VK_UP) {
+                    transformActiveSolid(new Mat4Transl(0,0.1,0));
+                    drawScene();
+                }
+                if (e.getKeyCode() == KeyEvent.VK_DOWN) {
+                    transformActiveSolid(new Mat4Transl(0,-0.1,0));
+                    drawScene();
+                }
 
                 //rotace šipky v jejím středu
                 if (e.getKeyCode() == KeyEvent.VK_T) {

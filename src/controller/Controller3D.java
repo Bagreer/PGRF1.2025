@@ -1,6 +1,5 @@
 package controller;
 
-import com.sun.security.jgss.GSSUtil;
 import rasterize.*;
 import render.Renderer;
 import solid.*;
@@ -11,9 +10,9 @@ import java.awt.event.*;
 
 public class Controller3D {
     private final Panel panel;
-    private LineRasterizer lineRasterizer;
+    private final LineRasterizer lineRasterizer;
 
-    private Renderer renderer;
+    private final Renderer renderer;
 
     //objekty
     private Solid arrow;
@@ -30,6 +29,9 @@ public class Controller3D {
     private AxisY axisY;
     private AxisZ axisZ;
 
+    //souradnice pro rozhlizeni
+    int cordX, cordY;
+
     /**
      * třída na ovládání a zobrazování grafických blbostí.
      * inicializuje listenery, definuje lineRasterizery a polygonRasterizery
@@ -38,7 +40,7 @@ public class Controller3D {
      */
     public Controller3D(Panel panel) {
 
-        panel.setRedrawAction(() -> drawScene());
+        panel.setRedrawAction(this::drawScene);
 
         this.panel = panel;
         this.lineRasterizer = new LineRasterizerTrivial(panel.getRaster(),0xffffff);
@@ -113,17 +115,31 @@ public class Controller3D {
      */
     private void initListeners() {
 
+        panel.addMouseMotionListener(new MouseMotionAdapter() {
+            @Override
+            public void mouseDragged(MouseEvent e) {
+                camera = camera.addAzimuth((cordX - e.getX()) * 0.0005);
+                camera = camera.addZenith((cordY - e.getY()) * 0.0005);
+
+                drawScene();
+            }
+        });
+
         panel.addMouseListener(new MouseAdapter() {
            public void mouseClicked(MouseEvent e) {
                panel.requestFocusInWindow();
            }
+
+            @Override
+            public void mousePressed(MouseEvent e) {
+                cordX = e.getX();
+                cordY = e.getY();
+            }
         });
 
         panel.addMouseWheelListener(new MouseWheelListener() {
-
             @Override
             public void mouseWheelMoved(MouseWheelEvent e) {
-
                 if (e.getWheelRotation() < 0) {
                     transformActiveSolid(new Mat4Scale(1.1));
                     drawScene();
@@ -135,13 +151,14 @@ public class Controller3D {
         });
 
         panel.addKeyListener(new KeyAdapter() {
-            public void keyPressed(KeyEvent e) {
 
+            public void keyPressed(KeyEvent e) {
                 // posouvání objektu
                 if (e.getKeyCode() == KeyEvent.VK_RIGHT) {
                     transformActiveSolid(new Mat4Transl(0.1,0,0));
                     drawScene();
-                } else if (e.getKeyCode() == KeyEvent.VK_LEFT) {
+                }
+                if (e.getKeyCode() == KeyEvent.VK_LEFT) {
                     transformActiveSolid(new Mat4Transl(-0.1, 0, 0));
                     drawScene();
                 }

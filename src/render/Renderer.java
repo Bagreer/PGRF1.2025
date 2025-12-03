@@ -2,6 +2,7 @@ package render;
 
 import rasterize.LineRasterizer;
 import solid.Solid;
+import transforms.Mat4;
 import transforms.Point3D;
 import transforms.Vec3D;
 
@@ -11,13 +12,21 @@ public class Renderer {
     private LineRasterizer lineRasterizer;
     private int width, height;
 
-    public Renderer(LineRasterizer lineRasterizer, int width, int height) {
+    private Mat4 view, proj;
+
+    public Renderer(LineRasterizer lineRasterizer, int width, int height, Mat4 proj,Mat4 view) {
         this.lineRasterizer = lineRasterizer;
         this.width = width;
         this.height = height;
+        this.proj = proj;
+        this.view = view;
     }
 
+
+
     public void renderSolid(Solid solid) {
+
+        //TODO optimalizace - nasobeni vsech matic spolu a pak bod nebo jednotlice
 
         for(int i = 0; i < solid.getIndexBuffer().size(); i += 2) {
             int indexA = solid.getIndexBuffer().get(i);
@@ -26,43 +35,47 @@ public class Renderer {
             Point3D a = solid.getVertexBuffer().get(indexA);
             Point3D b = solid.getVertexBuffer().get(indexB);
 
+            //done - modelovací matice (kazde teleso ma svoje) model -> world space
+            a = a.mul(solid.getModel());
+            b = b.mul(solid.getModel());
+
+            //pohledová matice (cela scena ma jednu)
+            a = a.mul(view);
+            b = b.mul(view);
+
+            //projekční matice (cela scena ma jednu)
+            a = a.mul(proj);
+            b = b.mul(proj);
+
+            //ořezání
+
+
+            //dehomogenizace
+            a = a.mul(1/a.getW());  //pozor na deleni nulou
+            b = b.mul(1/b.getW());
+
             // transformace do okna
-            Vec3D vecA = new Vec3D(a); //udelat z bodu vector, kvuli nasobeni ( nejde nasobit bod vektorem)
-            Vec3D vecB = new Vec3D(b);
-
-
-            // FIXME: vytvořit metodu pro tohle
-//            vecA = vecA.mul(new Vec3D(1,-1,1)); //mul vraci nový vektor, potřeba ho uložit !!!
-//            vecA = vecA.add(new Vec3D(1,1,0));
-//            vecA = vecA.mul(new Vec3D((double) (width-1) / 2, (double)(height-1)/2, 1));
-//
-//            vecB = vecB.mul(new Vec3D(1,-1,1));
-//            vecB = vecB.add(new Vec3D(1,1,0));
-//            vecB = vecB.mul(new Vec3D((double) (width-1) / 2, (double)(height-1)/2, 1));
-
-            vecA = transformVec(vecA); // transformVec vrací nový vetor
-            vecB = transformVec(vecB);
+            Vec3D vecA = transformToWindow(a); //udelat z bodu vector, kvuli nasobeni ( nejde nasobit bod vektorem)
+            Vec3D vecB = transformToWindow(b);
 
             lineRasterizer.rasterize(
                     (int) Math.round(vecA.getX()), (int) Math.round(vecA.getY()),
                     (int) Math.round(vecB.getX()), (int) Math.round(vecB.getY())
             );
         }
-
     }
 
     /**
      * udělá 3 operace nad maticí aby se pokaždé nemusel psát kód znovu
-     * @param vecA vector na kterem se provadi upravy
+     * @param point vector na kterem se provadi upravy
      * @return nový vektor
      */
-    private Vec3D transformVec(Vec3D vecA) {
-        vecA = vecA.mul(new Vec3D(1,-1,1)); //mul vraci nový vektor, potřeba ho uložit !!!
-        vecA = vecA.add(new Vec3D(1,1,0));
-        vecA = vecA.mul(new Vec3D((double) (width-1) / 2, (double)(height-1)/2, 1));
-
-        return vecA;
+    private Vec3D transformToWindow(Point3D point) {
+        return new Vec3D(point).mul(new Vec3D(1,-1,1))
+                .add(new Vec3D(1,1,0))
+                .mul(new Vec3D((double) (width-1) / 2, (double)(height-1)/2, 1));
     }
+
 
     public void renderSolids(ArrayList<Solid> solids) {
         //TODO implementovat
@@ -72,5 +85,10 @@ public class Renderer {
         }
 
     }
-
+    public void setView(Mat4 view) {
+        this.view = view;
+    }
+    public void setProj(Mat4 proj) {
+        this.proj = proj;
+    }
 }

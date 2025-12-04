@@ -15,6 +15,7 @@ public class Panel extends JPanel {
     private Boolean tetraSelected  = false;
     private Boolean pyramidSelected = false;
     private Boolean axisSelected = true;
+    private Boolean cylinderSelected = false;
 
     // na volání drawScene
     private Runnable redrawAction;
@@ -44,11 +45,13 @@ public class Panel extends JPanel {
         JRadioButton cube = new JRadioButton("cube");
         JRadioButton tetra = new JRadioButton("tetra");
         JRadioButton pyramid = new JRadioButton("pyramid");
+        JRadioButton cylinder = new JRadioButton("cylinder");
 
         group.add(arrow);
         group.add(cube);
         group.add(tetra);
         group.add(pyramid);
+        group.add(cylinder);
 
         arrow.setSelected(true);
 
@@ -56,6 +59,7 @@ public class Panel extends JPanel {
         pane.add(cube);
         pane.add(tetra);
         pane.add(pyramid);
+        pane.add(cylinder);
 
         setLayout(new BorderLayout());
         add(pane, BorderLayout.EAST);
@@ -65,6 +69,7 @@ public class Panel extends JPanel {
             cubeSelected = false;
             tetraSelected = false;
             pyramidSelected = false;
+            cylinderSelected = false;
 
             if (e.getSource() == arrow) {
                 arrowSelected = true;
@@ -74,6 +79,8 @@ public class Panel extends JPanel {
                 tetraSelected = true;
             } else if (e.getSource() == pyramid) {
                 pyramidSelected = true;
+            } else if (e.getSource() == cylinder) {
+                cylinderSelected = true;
             }
 
             // na volání metody drawScene
@@ -86,6 +93,7 @@ public class Panel extends JPanel {
         cube.addActionListener(radioListener);
         tetra.addActionListener(radioListener);
         pyramid.addActionListener(radioListener);
+        cylinder.addActionListener(radioListener);
 
         JCheckBox checkBox = new JCheckBox("Zobrazení os");
         checkBox.setSelected(true);
@@ -140,5 +148,8 @@ public class Panel extends JPanel {
     }
     public Boolean getAxisSelected() {
         return axisSelected;
+    }
+    public Boolean getCylinderSelected() {
+        return cylinderSelected;
     }
 }

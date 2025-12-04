@@ -19,6 +19,7 @@ public class Controller3D {
     private Solid cube;
     private Solid tetrahedron;
     private Solid pyramid;
+    private Solid cylinder;
 
     //camera
     private Camera camera;
@@ -72,6 +73,7 @@ public class Controller3D {
         axisX = new AxisX();
         axisY = new AxisY();
         axisZ = new AxisZ();
+        cylinder = new Cylinder();
 
         initListeners();
 
@@ -93,6 +95,8 @@ public class Controller3D {
             renderer.renderSolid(pyramid);
         else if (panel.getTetraSelected())
             renderer.renderSolid(tetrahedron);
+        else if (panel.getCylinderSelected())
+            renderer.renderSolid(cylinder);
 
         if (panel.getAxisSelected()) {
             lineRasterizer.setColor(0xff0000); //x
@@ -237,6 +241,8 @@ public class Controller3D {
             tetrahedron.mulModel(transform);
         else if (panel.getPyramidSelected())
             pyramid.mulModel(transform);
+        else if (panel.getCylinderSelected())
+            cylinder.mulModel(transform);
     }
 }
 

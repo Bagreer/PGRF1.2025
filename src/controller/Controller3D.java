@@ -6,7 +6,10 @@ import solid.*;
 import transforms.*;
 import view.Panel;
 
+import javax.swing.*;
 import java.awt.event.*;
+import java.util.Timer;
+import java.util.TimerTask;
 
 public class Controller3D {
     private final Panel panel;
@@ -32,6 +35,15 @@ public class Controller3D {
 
     //souradnice pro rozhlizeni
     int cordX, cordY;
+
+    //time for aniations
+    private Timer timer;
+    private double time = 0.0;
+    private final double step = 0.05;
+    boolean isAnimating = false;
+
+
+
 
     /**
      * třída na ovládání a zobrazování grafických blbostí.
@@ -216,6 +228,38 @@ public class Controller3D {
                     drawScene();
                 }
 
+                // animace
+                if (e.getKeyCode() == KeyEvent.VK_M) {
+
+                    if (isAnimating) {
+                        timer.cancel();
+                        timer = null;
+                        isAnimating = false;
+                    } else {
+                        timer = new java.util.Timer();
+                        timer.scheduleAtFixedRate(new java.util.TimerTask() {
+                            @Override
+                            public void run() {
+                                time += step;
+
+                                //scaling animation
+//                                transformActiveSolid(new Mat4Scale(1.0 + (Math.cos(time * 3.0) * 0.1)));
+
+                                // some random rotation
+//                                transformActiveSolid(new Mat4RotZ(Math.sin(time)*0.25));
+//                                transformActiveSolid(new Mat4RotX(Math.cos(time)*0.25));
+
+
+                                //gemini generated, but looks fire
+//                                transformActiveSolid(new Mat4RotY(time * 0.5));
+//                                transformActiveSolid(new Mat4Transl(Math.sin(time) * 0.75, 0.0, 0.0));
+
+                                SwingUtilities.invokeLater(Controller3D.this::drawScene);
+                            }
+                        }, 0, 33);
+                        isAnimating = true;
+                    }
+                }
 
                 //kdyz se rotuje, tak je mozny ze se telesa otoci a neni sranda to dat do puvodni polohy takze tlacitko resetuje plochu
                 if (e.getKeyCode() == KeyEvent.VK_C) {
@@ -226,6 +270,7 @@ public class Controller3D {
                     axisX = new AxisX();
                     axisY = new AxisY();
                     axisZ = new AxisZ();
+                    cylinder = new Cylinder();
                     drawScene();
                 }
             }

@@ -3,13 +3,15 @@ package controller;
 import rasterize.*;
 import render.Renderer;
 import solid.*;
+import solid.curves.CurveBezier;
+import solid.curves.CurveCoons;
+import solid.curves.CurveFerguson;
 import transforms.*;
 import view.Panel;
 
 import javax.swing.*;
 import java.awt.event.*;
 import java.util.Timer;
-import java.util.TimerTask;
 
 public class Controller3D {
     private final Panel panel;
@@ -23,11 +25,20 @@ public class Controller3D {
     private Solid tetrahedron;
     private Solid pyramid;
     private Solid cylinder;
+
+    //curves
+    private Solid curve;
     private Solid curveBezier;
+    private Solid curveCoons;
+    private Solid curveFerguson;
+    private int activeCurve;
+
 
     //camera
     private Camera camera;
     private Mat4 proj;
+
+    private boolean projType = false;
 
     //osy
     private AxisX axisX;
@@ -42,9 +53,6 @@ public class Controller3D {
     private double time = 0.0;
     private final double step = 0.05;
     boolean isAnimating = false;
-
-
-
 
     /**
      * třída na ovládání a zobrazování grafických blbostí.
@@ -65,7 +73,7 @@ public class Controller3D {
                 100
         );
 
-        this.camera = new Camera()
+        camera = new Camera()
                 .withPosition(new Vec3D(0.5,-1.5,1))
                 .withAzimuth(Math.toRadians(90))    //POZOR - zadává se v radiánech   otoceni hlavy doleva a doprava
                 .withZenith(Math.toRadians(-25))    //otoceni hlavy dolu a nahoru
@@ -87,7 +95,10 @@ public class Controller3D {
         axisY = new AxisY();
         axisZ = new AxisZ();
         cylinder = new Cylinder();
+        curve = new  Curve();
         curveBezier = new CurveBezier();
+        curveCoons = new CurveCoons();
+        curveFerguson = new CurveFerguson();
 
         initListeners();
 
@@ -112,7 +123,13 @@ public class Controller3D {
         else if (panel.getCylinderSelected())
             renderer.renderSolid(cylinder);
 
-        renderer.renderSolid(curveBezier);
+        switch (activeCurve) {
+            case 1: renderer.renderSolid(curve); break;
+            case 2: renderer.renderSolid(curveBezier); break;
+            case 3: renderer.renderSolid(curveCoons); break;
+            case 4: renderer.renderSolid(curveFerguson); break;
+            case 5: break;
+        }
 
         if (panel.getAxisSelected()) {
             lineRasterizer.setColor(0xff0000); //x
@@ -124,7 +141,6 @@ public class Controller3D {
             lineRasterizer.setColor(0x0000ff); //z
             renderer.renderSolid(axisZ);
         }
-
 
         lineRasterizer.setColor(0xffffff);
         panel.repaint();    // nutne pro překreslení scény
@@ -247,7 +263,7 @@ public class Controller3D {
                                 time += step;
 
                                 //scaling animation
-//                                transformActiveSolid(new Mat4Scale(1.0 + (Math.cos(time * 3.0) * 0.1)));
+                                transformActiveSolid(new Mat4Scale(1.0 + (Math.cos(time * 3.0) * 0.1)));
 
                                 // some random rotation
 //                                transformActiveSolid(new Mat4RotZ(Math.sin(time)*0.25));
@@ -277,6 +293,31 @@ public class Controller3D {
                     cylinder = new Cylinder();
                     drawScene();
                 }
+
+                switch (e.getKeyCode()) {
+                    case KeyEvent.VK_7: activeCurve = 1; break;
+                    case KeyEvent.VK_8: activeCurve = 2; break;
+                    case KeyEvent.VK_9: activeCurve = 3; break;
+                    case KeyEvent.VK_0: activeCurve = 4; break;
+                    case KeyEvent.VK_6: activeCurve = 5; break;
+                }
+
+                drawScene();
+
+                if (e.getKeyCode() == KeyEvent.VK_P) {
+
+                    if (projType) {
+                        proj = new Mat4OrthoRH(5,5,0.1,100);
+                    } else if (!projType) {
+                        proj = new Mat4PerspRH(Math.toRadians(90),
+                                panel.getRaster().getHeight() / (double)panel.getRaster().getWidth(),
+                                0.1,
+                                100);
+                    }
+                    projType = !projType;
+                    renderer.setProj(proj);
+                    drawScene();
+                }
             }
         });
     }
@@ -292,20 +333,13 @@ public class Controller3D {
             pyramid.mulModel(transform);
         else if (panel.getCylinderSelected())
             cylinder.mulModel(transform);
+        else {
+            switch (activeCurve) {
+                case 1: curve.mulModel(transform); break;
+                case 2: curveBezier.mulModel(transform); break;
+                case 3: curveCoons.mulModel(transform); break;
+                case 4: curveFerguson.mulModel(transform); break;
+            }
+        }
     }
 }
-
-//TODO
-// done - model -> vertexBuffer, indexBuffer -> model space
-// done - modelovaci transformace = model space -> world space
-// done - nastaveni kamery
-// done - pohledova transformace = world space -> view space
-// done - projekce = projekční transformace = view space -> clip space
-// ořezání (není potřeba aby to fungovalo)
-// done - dehomogenizace - x,y,z,w = x/w, y/w, z/w, w/w       clip space -> NDC
-// done - transformace do okna obrazovky NDC -> okno obrazovky
-// done - rasterizace
-
-
-
-//TODO nefunguje listener, nejak doresit

@@ -23,6 +23,7 @@ public class Controller3D {
     private Solid tetrahedron;
     private Solid pyramid;
     private Solid cylinder;
+    private Solid curveBezier;
 
     //camera
     private Camera camera;
@@ -86,6 +87,7 @@ public class Controller3D {
         axisY = new AxisY();
         axisZ = new AxisZ();
         cylinder = new Cylinder();
+        curveBezier = new CurveBezier();
 
         initListeners();
 
@@ -109,6 +111,8 @@ public class Controller3D {
             renderer.renderSolid(tetrahedron);
         else if (panel.getCylinderSelected())
             renderer.renderSolid(cylinder);
+
+        renderer.renderSolid(curveBezier);
 
         if (panel.getAxisSelected()) {
             lineRasterizer.setColor(0xff0000); //x

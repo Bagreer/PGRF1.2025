@@ -48,7 +48,7 @@ public class Renderer {
             b = b.mul(proj);
 
             //ořezání
-
+            if (a.getW() <= 0.1 || b.getW() <= 0.1) return; // nebo continue
 
             //dehomogenizace
             a = a.mul(1/a.getW());  //pozor na deleni nulou

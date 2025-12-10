@@ -40,6 +40,18 @@ public class Panel extends JPanel {
         JLabel label3 = new JLabel("č  - rotace kolem osy z");
         JLabel label4 = new JLabel("kolečko myši - scale");
 
+
+
+        JLabel label5 = new JLabel("<html>Po vybrání aktivního <br>objektu je potřeba<br>kliknout zpět do plátna</html>");
+
+        JLabel label6 = new JLabel("6 - žádná křivka");
+        JLabel label7 = new JLabel("7 - Sinus křivka");
+        JLabel label8 = new JLabel("8 - Bezier křivka");
+        JLabel label9 = new JLabel("9 - Coons křivka");
+        JLabel label10 = new JLabel("0 - Ferguson křivka");
+
+        JLabel label11 = new JLabel("<html>P - přepínání <br> perpektivní/ortogonální</html>");
+
         ButtonGroup group = new ButtonGroup();
         JRadioButton arrow = new JRadioButton("arrow");
         JRadioButton cube = new JRadioButton("cube");
@@ -113,15 +125,21 @@ public class Panel extends JPanel {
 
         pane.add(checkBox);
 
-        JLabel label5 = new JLabel("<html>Po vybrání aktivního <br>objektu je potřeba<br>kliknout zpět do plátna</html>");
         label5.setPreferredSize(new Dimension(125, 75));
 
         pane.add(label);
         pane.add(label1);
         pane.add(label2);
         pane.add(label3);
+        pane.add(label6);
+        pane.add(label7);
+        pane.add(label8);
+        pane.add(label9);
+        pane.add(label10);
         pane.add(label4);
+        pane.add(label11);
         pane.add(label5);
+
     }
 
     @Override
